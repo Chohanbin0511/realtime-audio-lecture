@@ -1,169 +1,57 @@
-# Wowza HLS Player (Vue 3 + Video.js + HLS.js)
+# realtime-audio-lecture
 
-Vue 3와 Video.js, HLS.js를 사용한 Wowza 전용 HLS 플레이어입니다.  
-1,000명 동시 접속을 고려한 버퍼링·폴링·캐싱 전략을 적용했습니다.
+Vue 3 + Vite 기반 **실시간 오디오 방송**과 **학생용 실시간 강의(청취)** 화면을 한 앱에서 다루는 웹 데모입니다.  
+같은 브라우저의 다른 탭끼리 `BroadcastChannel`으로 자막·라이브 오디오를 주고받습니다.
 
-## 기능
+## 요구 사항
 
-- **useStreamingSafe**: Exponential Backoff + Jitter 재연결 (동시 play 폭주 방지)
-- **화질(ABR) localStorage**: 사용자 화질 설정 저장/불러오기
-- **버퍼링 프로그레스 바**: HLS.js `fragBuffered` 기반 버퍼 구간 시각화
-- **Wowza-FE 설정 매칭**: Application.xml ↔ HLS.js 옵션 동기화 (chunk, DVR, 버퍼)
-- **useSwrWithJitter**: SWR + Jitter 메타데이터 폴링 (요청 시점 분산)
-- **Service Worker**: 정적 리소스 강력 캐싱 (PWA)
+- **Node.js** 18+
+- **pnpm** 8+ ([설치](https://pnpm.io/installation))
 
-## 설치 및 실행
+## 설치
 
 ```bash
-npm install
-npm run dev
+pnpm install
 ```
 
-빌드:
+## 스크립트
 
-```bash
-npm run build
-```
+| 명령 | 설명 |
+|------|------|
+| `pnpm dev` | 개발 서버 (기본 `http://localhost:5173`, `--host 0.0.0.0` 으로 LAN 접속 가능) |
+| `pnpm build` | 타입체크(`vue-tsc`) 후 프로덕션 빌드 |
+| `pnpm preview` | 빌드 결과 미리보기 |
 
-## 사용법
+## 사용 방법 (데모)
 
-### 플레이어
+1. `pnpm dev` 실행 후 브라우저에서 앱을 연다.
+2. **방송하기** 탭 → 수업 시작 및 녹음 → 마이크로 방송을 시작한다.
+3. **실시간 강의(학생)** 탭을 새 탭으로 연다 (같은 출처·같은 브라우저).
+4. 방송 중에는 학생 화면이 **수업 중**으로 맞춰지고, 자막·경과 시간·라이브 오디오(지원 브라우저)가 동기화된다.
 
-`WowzaPlayer`에 HLS 스트림 URL을 넘깁니다. SecureToken 사용 시 URL에 `?wowzatoken=hash`를 포함하세요.
+> 자막(STT)은 **Chrome/Edge**의 Web Speech API를 사용한다.  
+> 마이크·STT 권한이 필요하다.
 
-```vue
-<WowzaPlayer
-  src="https://your-wowza-host/stream.m3u8?wowzatoken=..."
-  :max-retries="10"
-  :config="wowzaConfig"
-  :show-status="true"
-/>
-```
+## 주요 기능
 
-#### 기능 상태 패널 (showStatus)
+- **방송**: 마이크 녹음(WAV), Web Speech API 자막, 탭 간 자막 브로드캐스트
+- **청취**: 자막 수신, 방송 종료 후 IndexedDB에 저장된 녹음 재생
+- **라이브 오디오**: WebM 청크 + MediaSource(청취 탭, 같은 브라우저)
+- **상태 동기화**: `localStorage` 플래그로 “방송 중” 여부 공유
+- **PWA**: `vite-plugin-pwa` (빌드 후 서비스 워커 생성)
 
-플레이어 하단에 **기능 상태** 패널이 표시됩니다. 각 기능의 동작 여부를 한눈에 확인할 수 있습니다.
+## 기술 스택
 
-| 항목 | 정상 시 표시 |
-|------|-------------|
-| 재연결(useStreamingSafe) | `정상 (재시도 0회)` |
-| ABR(localStorage) | `자동 (N개 레벨)` 또는 `레벨 N 고정` |
-| 버퍼(fragBuffered) | `N개 구간, 약 Xs` |
-| DVR 윈도우 | `3600s` (설정 시) |
-| HLS 레벨 | `자동` 또는 `레벨 N` |
-| Service Worker | `캐싱 활성화` (build 후 배포 시) |
+- Vue 3, Vue Router, TypeScript, Vite  
+- Tailwind CSS, SCSS  
+- extendable-media-recorder, wavesurfer.js  
+- BroadcastChannel, IndexedDB, MediaRecorder / MediaSource  
 
-`show-status="false"`로 비활성화 가능합니다.
+## 환경 변수
 
-#### Wowza-FE 설정 매칭 (config)
+로컬 전용 설정이 있다면 프로젝트 루트에 `.env`를 두고 사용한다.  
+저장소에는 `.env`를 올리지 않는다 (`.gitignore` 처리).
 
-| Wowza 서버 (Application.xml) | FE 옵션 |
-|-------------------------------|---------|
-| cupertinoChunkDurationTarget (2~4s) | `config.hlsjs.maxBufferLength` |
-| dvrWindowDuration (초) | `config.dvrWindowDuration` → 타임라인 Max Seek Range |
-| Transcoder Bitrate 리스트 | qualityLevels UI (자동 1:1 매칭) |
-| security/SecureToken | `src`에 `?wowzatoken=hash` 포함 |
+## 라이선스
 
-```ts
-import { WOWZA_DEFAULT_CONFIG } from '@/types/wowza'
-
-const wowzaConfig = {
-  ...WOWZA_DEFAULT_CONFIG,
-  hlsjs: {
-    maxBufferLength: 30,
-    liveSyncDuration: 4,
-    liveMaxLatencyDuration: 8,
-  },
-  dvrWindowDuration: 3600, // 1시간 DVR
-}
-```
-
-### useSwrWithJitter (메타데이터 폴링)
-
-강의 정보, 참여자 수 등 API 폴링 시 요청 시점을 분산합니다.  
-`5000ms + random(0, 1000ms)` = 1,000명이 동시에 5초 타이머로 요청하지 않도록 방지.
-
-```ts
-import { useSwrWithJitter } from '@/composables/useSwrWithJitter'
-
-const { data, error, mutate, refresh } = useSwrWithJitter({
-  fetcher: () => fetch('/api/lecture-info').then(r => r.json()),
-  pollIntervalMs: 5000,
-  jitterMs: 1000,
-  immediate: true,
-})
-```
-
-### useStreamingSafe
-
-네트워크 오류 시 재연결이 필요할 때 사용합니다.
-
-```ts
-import { useStreamingSafe } from '@/composables/useStreamingSafe'
-
-const { scheduleRetry, onReconnectSuccess, isReconnecting, retryCount } = useStreamingSafe({
-  maxRetries: 10,
-  initialDelayMs: 1000,
-  maxDelayMs: 30000,
-  backoffMultiplier: 2,
-  resetOnSuccess: true,
-})
-
-// 실패 시
-scheduleRetry(() => {
-  // 재연결 시도 (예: hls.loadSource(url))
-})
-
-// 성공 시
-onReconnectSuccess()
-```
-
-### useAbrStorage
-
-화질(ABR) 인덱스를 localStorage에 저장/불러옵니다. `-1`은 자동, `0` 이상은 해당 레벨 고정입니다.
-
-```ts
-import { useAbrStorage } from '@/composables/useAbrStorage'
-
-const { levelIndex, load, save, setLevels } = useAbrStorage()
-load()           // 저장된 값 불러오기
-save(0)          // 0번 레벨로 저장
-setLevels([...]) // 플레이어에서 레벨 목록 주입
-```
-
-### SecureToken URL 헬퍼
-
-```ts
-import { buildSecureTokenUrl } from '@/utils/secureToken'
-
-const src = buildSecureTokenUrl({
-  baseUrl: 'https://host:1935/app/stream/playlist.m3u8',
-  token: '공유비밀키로_생성한_해시',
-  paramName: 'wowzatoken', // 기본값
-})
-```
-
-## 프로젝트 구조
-
-```
-src/
-  composables/
-    useStreamingSafe.ts   # 재연결 (Exponential Backoff + Jitter)
-    useAbrStorage.ts     # ABR localStorage
-    useSwrWithJitter.ts  # SWR + Jitter 메타데이터 폴링
-  components/
-    WowzaPlayer.vue      # 메인 플레이어
-    BufferingProgressBar.vue  # fragBuffered 기반 버퍼 바
-  types/
-    wowza.ts             # Wowza-FE 설정 타입
-  utils/
-    secureToken.ts       # SecureToken URL 헬퍼
-  App.vue
-  main.ts
-```
-
-## 1,000명 동시 접속 대응 전략
-
-1. **정적 리소스 캐싱**: Service Worker (vite-plugin-pwa)로 JS/CSS/이미지 캐시
-2. **메타데이터 폴링**: `useSwrWithJitter`로 요청 시점 분산
-3. **재연결**: `useStreamingSafe` 지수 백오프 + Jitter로 동시 play 폭주 방지
+개인/학습용 프로젝트에 맞게 필요 시 본인이 `LICENSE`를 추가하면 된다.
