@@ -1,0 +1,4 @@
+{
+  // 폴더를 열 때 tasks.json 등에 정의된 작업이 자동 실행되지 않게 함
+  "task.allowAutomaticTasks": "off"
+}

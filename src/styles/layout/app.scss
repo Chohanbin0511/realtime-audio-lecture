@@ -1,0 +1,242 @@
+@use '../variables' as *;
+@use '../mixins' as m;
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(var(--header-h, 68px) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(#{$footer-h} + env(safe-area-inset-bottom, 0px));
+}
+
+.header {
+  --header-h: 68px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-header;
+  min-height: var(--header-h);
+  padding-top: env(safe-area-inset-top, 0px);
+  display: flex;
+  align-items: center;
+  background: $header-bg;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid $header-border;
+  box-sizing: border-box;
+}
+
+.header-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 0;
+  min-width: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.logo-text-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-tagline {
+  font-size: 12px;
+  color: $color-text-muted;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-tagline--short {
+  display: none;
+}
+
+.main {
+  flex: 1;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(#{$footer-h} + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
+  /* 단색이 그대로 보이도록 (blur는 뒤 콘텐츠와 섞여 색이 안 바뀐 것처럼 보일 수 있음) */
+  background-color: $footer-bg;
+  border-top: 1px solid $footer-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: min(20vw, 120px);
+  padding: 8px 16px;
+  z-index: $z-footer;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: $footer-nav;
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 12px;
+  min-width: 60px;
+
+  &:hover:not(.active) {
+    color: $footer-nav-hover;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &.active {
+    color: $footer-nav-active;
+    background: $footer-nav-active-bg;
+    font-weight: 600;
+  }
+
+  &.active .nav-icon {
+    transform: scale(1.05);
+  }
+}
+
+.nav-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease;
+  color: inherit;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: inherit;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.nav-label--stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1.15;
+}
+
+.nav-label-line {
+  display: block;
+}
+
+.nav-label-line--sub {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+@include m.media-down($bp-sm) {
+  .header-content {
+    padding: 0 12px;
+    @include m.safe-area-padding-x;
+  }
+
+  .logo-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .logo-text {
+    font-size: 1.05rem;
+  }
+
+  .header-tagline--full {
+    display: none;
+  }
+
+  .header-tagline--short {
+    display: block;
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  .bottom-nav {
+    padding: 4px 8px;
+  }
+
+  .nav-tab {
+    padding: 6px 8px;
+    min-width: 50px;
+  }
+
+  .nav-icon {
+    font-size: 18px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+  }
+}
+
+@include m.media-down($bp-xs) {
+  .logo-text {
+    font-size: 0.95rem;
+  }
+
+  .nav-label {
+    font-size: 9px;
+  }
+
+  .nav-tab {
+    min-width: 45px;
+  }
+}

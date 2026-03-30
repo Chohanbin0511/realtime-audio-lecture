@@ -1,0 +1,16 @@
+@mixin media-down($max) {
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+@mixin media-up($min) {
+  @media (min-width: $min) {
+    @content;
+  }
+}
+
+@mixin safe-area-padding-x {
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+}

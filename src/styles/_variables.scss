@@ -1,0 +1,55 @@
+// ── 통합 디자인 토큰 (앱·페이지·컴포넌트에서 @use) ─────────────────────────────
+
+// 레이아웃
+$header-h-desktop: 70px;
+$header-h-tablet: 56px;
+$header-h-mobile: 52px;
+$footer-h: 80px;
+/** 방송 대시보드·세션 본문 가로 — clamp + 브레이크포인트로 뷰포트에 맞게 확장 (상한) */
+$dash-inner-min: 360px;
+$dash-inner-max: 1080px;
+$bp-sm: 640px;
+$bp-xs: 480px;
+$bp-md: 480px; // sc-body padding
+
+// z-index
+$z-header: 100;
+$z-footer: 50;
+$z-modal: 200;
+
+// 앱 셸 (라이트)
+$color-page-bg: #f3f4f6;
+$color-text: #0f172a;
+$color-text-muted: #737373;
+$color-border: #e5e5e5;
+$color-card-surface: #f9fafc;
+$font-body: system-ui, -apple-system, sans-serif;
+
+// 푸터 탭 (밝은 바 · 비활성 연회색 / 현재 메뉴 아이콘·글씨 검정)
+$footer-bg: #ffffff;
+$footer-border: #e5e5e5;
+$footer-nav: #a3a3a3;
+$footer-nav-hover: #737373;
+$footer-nav-active: #171717;
+$footer-nav-active-bg: transparent;
+
+// 헤더
+$header-bg: rgba(255, 255, 255, 0.92);
+$header-border: #e5e5e5;
+
+// 방송 대시보드
+$dash-text: #0f172a;
+$dash-heading: #171717;
+$dash-sub: #64748b;
+$dash-link: #737373;
+$dash-link-hover: #525252;
+
+// 히어로 카드 (다가오는 수업)
+$hero-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 45%, #1e3a8a 100%);
+$hero-shadow: 0 20px 50px -12px rgba(37, 99, 235, 0.45);
+
+// 방송 세션 패널 (다크 모달 내부)
+$session-bg: #0a0a0a;
+$session-text: #f8fafc;
+$session-muted: #94a3b8;
+$session-card-border: rgba(255, 255, 255, 0.08);

@@ -1,0 +1,589 @@
+@use '../variables' as *;
+@use '../mixins' as m;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 페이지 래퍼
+// .app 이 이미 padding-bottom: $footer-h 를 갖고 있으므로
+// 여기서는 내부 여백만 설정합니다 (이중 계산 방지).
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-student {
+  min-height: calc(100dvh - var(--header-h, 70px) - env(safe-area-inset-top, 0px));
+  background: #fff;
+  color: $dash-text;
+  padding: 20px 16px 28px;
+}
+
+.listen-inner {
+  width: 100%;
+  max-width: min(100%, clamp(#{$dash-inner-min}, 88vw, #{$dash-inner-max}));
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 상태 탭 스위처
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-shell-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 12px;
+  background: #f4f4f5;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+}
+
+.listen-shell-switch button {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  background: #fff;
+  color: $dash-heading;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #fafafa;
+  }
+
+  &.is-active {
+    border-color: #2563eb;
+    color: #1d4ed8;
+    background: rgba(37, 99, 235, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 수업 전 화면
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-notice {
+  text-align: center;
+  padding: 28px 12px 32px;
+}
+
+.listen-notice-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #94a3b8;
+}
+
+.listen-notice-title {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1.4;
+}
+
+.listen-notice-desc {
+  margin: 0 auto;
+  font-size: 0.875rem;
+  color: $dash-sub;
+  line-height: 1.55;
+  max-width: 320px;
+}
+
+.listen-section-title {
+  margin: 0 0 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $dash-heading;
+}
+
+.listen-class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.listen-class-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  background: #fafafa;
+  text-align: left;
+}
+
+.listen-class-card-ic {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+}
+
+.listen-class-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.listen-class-card-title {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $dash-heading;
+}
+
+.listen-class-card-sub {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.listen-class-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.listen-meta-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 수업 없음 화면
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: min(60vh, 480px);
+  padding: 32px 16px;
+}
+
+.listen-empty-icon {
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.listen-empty-title {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #334155;
+  line-height: 1.45;
+  max-width: 320px;
+}
+
+.listen-empty-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 수업 중 헤더 — 반응형 핵심 영역
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-live-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid $color-border;
+}
+
+.listen-live-title {
+  margin: 0 0 6px;
+  font-size: clamp(1.05rem, 3.5vw, 1.25rem);
+  font-weight: 700;
+  color: $dash-heading;
+  line-height: 1.25;
+}
+
+.listen-live-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.listen-live-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// 오른쪽 컨트롤 묶음
+.listen-live-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+// 경과 시간 표시
+.listen-live-elapsed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// 방송 중 뱃지
+.listen-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: badge-appear 0.25s ease;
+}
+
+.listen-live-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: live-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.15; }
+}
+
+@keyframes badge-appear {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.listen-live-head-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 10px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+// 모바일: 작은 화면에서 컨트롤 묶음 줄이기
+@include m.media-down(520px) {
+  .listen-live-head {
+    gap: 8px;
+  }
+
+  .listen-live-title {
+    font-size: 1rem;
+  }
+
+  .listen-live-head-right {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .listen-live-elapsed {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .listen-live-badge {
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+
+  .listen-live-head-btn {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+
+    // 좁은 화면에서 텍스트 숨기고 아이콘만
+    span,
+    .btn-text {
+      display: none;
+    }
+  }
+}
+
+@include m.media-down(380px) {
+  .listen-live-elapsed {
+    display: none; // 극단적으로 좁을 때는 숨김
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 수업 중 그리드 (자막 + AI 패널)
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-live-grid {
+  display: grid;
+  gap: 16px;
+
+  @include m.media-up(900px) {
+    grid-template-columns: 1fr minmax(260px, 300px);
+    align-items: start;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 자막 패널
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-transcript-panel {
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  background: #fafafa;
+  min-height: 280px;
+  max-height: min(55vh, 520px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.listen-transcript-head {
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 1px solid $color-border;
+  background: #fff;
+}
+
+.listen-transcript-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+}
+
+.listen-transcript-empty {
+  padding: 24px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.listen-transcript-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.listen-transcript-row--seekable {
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 12px 8px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(37, 99, 235, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.listen-ts {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 999px;
+}
+
+.listen-transcript-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.listen-bookmark {
+  flex-shrink: 0;
+  color: #93c5fd;
+  cursor: default;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 오디오 영역
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-audio-shell {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px dashed $color-border;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.listen-audio-label {
+  margin: 0 0 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.listen-audio-placeholder {
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 200% 100%;
+  animation: listen-shimmer 1.5s ease-in-out infinite;
+}
+
+.listen-audio-player {
+  display: block;
+  width: 100%;
+  height: 40px;
+}
+
+@keyframes listen-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.listen-live-audio-err,
+.listen-live-audio-wait {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.listen-live-audio-err {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #b91c1c;
+}
+
+.listen-live-audio-wait {
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #475569;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI 패널 (사이드)
+// ─────────────────────────────────────────────────────────────────────────────
+.listen-ai-panel {
+  border-radius: 14px;
+  border: 1px solid #fce7f3;
+  background: linear-gradient(180deg, #fff5f7 0%, #fff 40%);
+  overflow: hidden;
+}
+
+.listen-ai-pill {
+  margin: 12px auto 0;
+  display: table;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #db2777;
+  background: #fce7f3;
+  border-radius: 999px;
+}
+
+.listen-ai-body {
+  padding: 14px;
+}
+
+.listen-ai-block {
+  margin-bottom: 14px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.listen-ai-tag {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #db2777;
+  background: rgba(219, 39, 119, 0.12);
+  border-radius: 6px;
+}
+
+.listen-ai-term {
+  margin: 0 0 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $dash-heading;
+}
+
+.listen-ai-desc {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.listen-ai-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.listen-ai-source {
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  background: #f0fdf4;
+}
