@@ -52,6 +52,21 @@ pnpm install
 로컬 전용 설정이 있다면 프로젝트 루트에 `.env`를 두고 사용한다.  
 저장소에는 `.env`를 올리지 않는다 (`.gitignore` 처리).
 
+## Vercel 배포
+
+1. GitHub에 이 프로젝트를 푸시해 둔다.
+2. [Vercel](https://vercel.com)에 로그인 → **Add New…** → **Project** → 해당 GitHub 저장소를 import한다.
+3. **Framework Preset**은 `Vite`로 잡히면 그대로 두면 된다.  
+   - **Install Command**: `pnpm install` (또는 `pnpm-lock.yaml`이 있으면 자동으로 pnpm 사용)  
+   - **Build Command**: `pnpm run build`  
+   - **Output Directory**: `dist`
+4. **Deploy**를 누르면 빌드 후 `*.vercel.app` URL로 배포된다.
+
+루트의 `vercel.json`은 Vue Router용 **SPA 폴백**(`/listen` 등 직접 접속·새로고침 시 `index.html` 제공)을 위해 넣어 두었다.
+
+배포 URL은 **HTTPS**이므로 마이크·미디어 API 사용에 유리하다.  
+탭 간 통신은 **같은 브라우저·같은 도메인**에서만 동작한다.
+
 ## 라이선스
 
 개인/학습용 프로젝트에 맞게 필요 시 본인이 `LICENSE`를 추가하면 된다.
